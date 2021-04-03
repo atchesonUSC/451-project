@@ -7,16 +7,23 @@ import threading
 
 
 class Node:
-    def __init__(self, x, y, p):
-        self.x = x
-        self.y = y
-        self.parent = p
+    def __init__(self):
+        self.x = ...
+        self.y = ...
+        self.parent = ...
 
     def get_parent(self):
         return self.parent
 
-    def get_pos(self):
+    def get_position(self):
         return self.x, self.y
+
+    def set_parent(self, p):
+        self.parent = p
+
+    def set_position(self, x, y):
+        self.x = x
+        self.y = y
 
 
 class Tree:
@@ -77,16 +84,17 @@ def sample(n, p, m, delta, config_space):
         # perform m local samples
         for j in range(0, m):
 
-            # sample a random value
+            # sample a random value, returns an (x, y) coordinate
             q_rand = get_random_node(config_space)
 
-            # find nearest neighbor to q_rand
+            # find nearest neighbor to q_rand, returns a Node object pointer
             q_near = find_nearest_neighbor(config_space, q_rand)
 
-            # extend the RRT tree by creating new point
+            # extend the RRT tree by creating new point, returns Node object pointer
             q_new = extend_tree(q_near, q_rand, delta)
 
             if not too_similar(q_near, q_new) and is_valid(q_new):
+                q_new.set_parent(q_near)
                 local_container.append((q_near, q_new))
 
         # add nodes to the tree
