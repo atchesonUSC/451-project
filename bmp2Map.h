@@ -1,4 +1,5 @@
 #include <vector>
+#include <string>
 #include "bitmap_image.hpp"
 
 class bmpMap
@@ -9,7 +10,7 @@ private:
    unsigned int height;
    unsigned int width;
 public:
-   bmpMap(bitmap_image img);
+   bmpMap(std::string& filename);
    ~bmpMap();
    void printMap();
    bool checkFree(int x, int y);
