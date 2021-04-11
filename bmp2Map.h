@@ -1,35 +1,60 @@
-#include <cstdio>
+#include <vector>
 #include "bitmap_image.hpp"
 
-int main()
+class bmpMap
 {
-   bitmap_image image("input.bmp");
+private:
+   bitmap_image img;
+   std::vector<std::vector<int>> map;
+   unsigned int height;
+   unsigned int width;
+public:
+   bmpMap(bitmap_image img);
+   ~bmpMap();
+   void printMap();
+   bool checkFree(int x, int y);
+};
 
-   if (!image)
+bmpMap::bmpMap(bitmap_image img)
+: img(img),
+  height(img.height()),
+  width(img.width())
+{
+   //Create map
+   for (std::size_t y = 0; y < height; ++y)
    {
-      printf("Error - Failed to open: input.bmp\n");
-      return 1;
+      std::vector<int> newRow;
+      map.push_back(newRow);
+      for (std::size_t x = 0; x < width; ++x)
+      {
+         rgb_t color;
+         img.get_pixel(x, y, color);
+         //if the color is darker than medium grey then its a zero
+         if((color.red < 128)&&(color.green < 128)&&(color.blue < 128))
+            map[y].push_back(0);
+         else
+            map[y].push_back(1);
+      }
    }
+}
 
-   unsigned int total_number_of_pixels = 0;
+bmpMap::~bmpMap()
+{
+}
 
-   const unsigned int height = image.height();
-   const unsigned int width  = image.width();
-
+void bmpMap::printMap()
+{
    for (std::size_t y = 0; y < height; ++y)
    {
       for (std::size_t x = 0; x < width; ++x)
       {
-         rgb_t colour;
-
-         image.get_pixel(x, y, colour);
-
-         if (colour.red >= 111)
-            total_number_of_pixels++;
+         printf("%d ", map[y][x]);
       }
+      printf("\n");
    }
+}
 
-   printf("Number of pixels with red >= 111: %d\n",total_number_of_pixels);
-
-   return 0;
+bool bmpMap::checkFree(int x, int y)
+{
+   return map[y][x] == 1;
 }
