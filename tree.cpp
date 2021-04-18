@@ -86,7 +86,7 @@ struct idx_val_pair find_min_distance(const struct idx_val_pair omp_out, const s
 	}
 }
 
-int nearest_neighbor_search(struct Node* node, int t, int tree_sz) {
+int nearest_neighbor_search(std::pair<double, double> pos, int t, int tree_sz) {
 	// set number of threads for openMP execution
 	omp_set_num_threads(t);
 
@@ -110,7 +110,7 @@ int nearest_neighbor_search(struct Node* node, int t, int tree_sz) {
 	#pragma omp parallel for reduction(min_pair: min)
 	for (int i = 0; i < tree_sz; ++i) {
 		// calculate distance between random node and tree node
-		double d = calc_distance(node->val, tree[i].val);
+		double d = distance(pos, nodes[i]);
 
 		// check if distance is less than the current minimum distance
 		if (d < min.val) {
