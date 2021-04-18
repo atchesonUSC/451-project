@@ -39,8 +39,9 @@ private:
 
 class RRTTree {
 public:
-    RRTTree(std::pair<double, double> start_pos); //FIXME create root somewhere
+    RRTTree();
     ~RRTTree();
+    void createRoot(std::pair<double, double> start_pos); //FIXME create root somewhere
     RRTNode nearest_neighbor_search(std::pair<double, double> pos, int openmp_thread_count);
     void addNode(int p, std::pair<double, double> pos);
     int size();

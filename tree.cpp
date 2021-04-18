@@ -49,7 +49,14 @@ std::pair<double, double> RRTNode::getPosition(){
 
 // ========== RRTTree ========== //
 
-RRTTree::RRTTree() {}
+RRTTree::RRTTree(){
+}
+
+RRTTree::createRoot(std::pair<double, double> start_pos) {
+	vector<int> empty;
+	RRTNode root = RRTNode(0, -1, empty, start_pos);
+	nodes.push_back(root);
+}
 
 RRTTree::~RRTTree() {}
 
@@ -97,6 +104,8 @@ RRTNode RRTTREE::nearest_neighbor_search(std::pair<double, double> p, int t) {
 			min.val = d;
 		}
 	}
+
+	// maybe we add in something here to compare to locally sampled nodes...
 
 	// return index of the nearest neigbor in the nodes vector
 	return nodes[min.idx];
