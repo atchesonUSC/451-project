@@ -32,7 +32,7 @@ private:
     int id; 			          //index of RRTNode in tree vector
     int parent; 		          //index of parent in tree vector;
     std::vector<int> children;    //indices of children in tree vector;
-    std::pair<double, double> position;
+    std::pair<int, int> position;
 };
 
 // ========== RRTTree class ========== //
@@ -42,8 +42,9 @@ public:
     RRTTree();
     ~RRTTree();
     void createRoot(std::pair<double, double> start_pos); //FIXME create root somewhere
-    RRTNode nearest_neighbor_search(std::pair<double, double> pos, int openmp_thread_count);
+    int nearest_neighbor_search(std::pair<double, double> pos, int openmp_thread_count);
     void addNode(int p, std::pair<double, double> pos);
+    RRTNode get_node(int idx);
     int size();
 
 private:
