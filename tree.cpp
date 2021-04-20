@@ -49,16 +49,15 @@ std::pair<double, double> RRTNode::getPosition(){
 
 // ========== RRTTree ========== //
 
-RRTTree::RRTTree(){
-}
+RRTTree::RRTTree() {}
+
+RRTTree::~RRTTree() {}
 
 RRTTree::createRoot(std::pair<double, double> start_pos) {
 	vector<int> empty;
 	RRTNode root = RRTNode(0, -1, empty, start_pos);
 	nodes.push_back(root);
 }
-
-RRTTree::~RRTTree() {}
 
 void RRTTree::addNode(int p, std::pair<double, double> pos){
     //TODO synchronize this with a mutex
@@ -71,7 +70,11 @@ void RRTTree::addNode(int p, std::pair<double, double> pos){
     return;
 }
 
-RRTNode RRTTREE::nearest_neighbor_search(std::pair<double, double> p, int t) {
+RRTNode RRTTree::get_node(int idx) {
+	return nodes[idx];
+}
+
+int RRTTREE::nearest_neighbor_search(std::pair<double, double> p, int t) {
 	// set number of threads for openMP execution
 	omp_set_num_threads(t);
 
@@ -108,5 +111,5 @@ RRTNode RRTTREE::nearest_neighbor_search(std::pair<double, double> p, int t) {
 	// maybe we add in something here to compare to locally sampled nodes...
 
 	// return index of the nearest neigbor in the nodes vector
-	return nodes[min.idx];
+	return min.idx;
 }
