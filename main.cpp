@@ -5,11 +5,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <stdio.h>
-<<<<<<< HEAD
-#include <string>
-=======
 #include <pthread.h>
->>>>>>> 451365b85427462d1a482a39b00a75b067cecfad
 
 #include "tree.h"
 #include "bmp2Map.h"
@@ -234,31 +230,22 @@ RRTNode create_node(int q_near_idx, pair<int, int> q_rand, int delta) {
 performs sampling operations
 */
 void sample_func(void* args_struct) {
-    // TODO: add argument for reference to bmpMap
     sample_args* args;
-    int** global_map, local_map;
+    int** local_map;
     int samples, t, m, delta, dim_x, dim_y, openmp_t;
 
     // setup arguments
     args = (sample_args*) args_struct;
 
+    bmpMap local_map(*args->bmp_map);
+
     t = args->t;
     m = args->m;
     delta = args->delta;
     samples = args->samples;
-    global_map = args->bmp_map;
     dim_x = args->dim_x;
     dim_y = args->dim_y;
     openmp_t = args->openmp_t;
-    
-    // create local copy of bmp_map
-    local_map = new int[dim_y][dim_x];
-
-    for (int i = 0; i < dim_y; i++) {
-        for (int j = 0; j < dim_x; ++j) {
-            local_map[i][j] = global_map[i][j];
-        }
-    }
 
     // begin sampling
     int i = 0;

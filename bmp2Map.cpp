@@ -27,6 +27,38 @@ bmpMap::bmpMap(std::string& filename)
     }
 }
 
+bmpMap::bmpMap(const bmpMap& rhs)
+:img(rhs.img)
+,width(rhs.width)
+,height(rhs.height)
+{
+    //Create map
+    for (std::size_t y = 0; y < height; ++y) {
+        std::vector<int> newRow;
+        map.push_back(newRow);
+        map[y] = rhs.map[y];
+    }
+}
+
+// Assignment operator
+bmpMap& bmpMap::operator=(const bmpMap& rhs)
+{
+    // 1. First check that we're not self-assigning
+    if (&rhs != this)
+    {
+        this->img = rhs.img;
+        this->width = rhs.width;
+        this->height = rhs.height;
+        //Create map
+        for (std::size_t y = 0; y < height; ++y) {
+            std::vector<int> newRow;
+            this->map.push_back(newRow);
+            this->map[y] = rhs.map[y];
+        }
+    }
+    return *this;
+}
+
 bmpMap::~bmpMap() {}
 
 void bmpMap::printMap() {
