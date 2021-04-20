@@ -1,6 +1,7 @@
 #include <random>
 #include <pthread.h>
 #include <stdio.h>
+#include <string>
 
 #include "tree.h"
 #include "bmp2Map.h"
