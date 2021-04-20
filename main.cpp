@@ -264,7 +264,16 @@ void sample_func(void* args_struct) {
             // create new node for tree
             RRTNode new_node = create_node(neighbor_idx, q_rand, delta);
 
-            // To be continued...
+             // TODO: Check if too similar and is valid        
+            pair<double, double> q_new(new_node.getPosition());
+                                                        /*need to make checkSimilar func*/
+            if(local_map.checkFree(q_new.first, q_new.second) && checkSimilar(q_new)){
+                // If true add to local bin 
+
+            }
+
         }
+        // TODO: Add to global bin
+
     }
 }
