@@ -17,7 +17,8 @@ using namespace std;
 // function prototypes
 void sample_func(void* args);
 string* parse_config_file(string filename);
-pair<int, int> get_point(int dim_x, int dim_y);
+pair<int, int> sample_bmp_map(int dim_x, int dim_y);
+RRTNode create_node(int q_near_idx, pair<int, int> q_rand, int delta);
 pair<double, double> uniformSample(default_random_engine &generator, uniform_real_distribution &distribution);
 
 // Struct for passing arguments into the function of pthread_create()
@@ -55,7 +56,10 @@ Command Line Arguments:
 
 
 // RRTTree: Global tree structure for storing nodes
-RRTTree tree = RRTTree();
+RRTTree tree;
+
+// for barrier sync
+Barrier barrier;
 
 int main(int argc, char* argv){
 
@@ -88,6 +92,9 @@ int main(int argc, char* argv){
     samples = stoi(config[4]);
     openmp_t = stoi(config[10]);
 
+    // setup barrier
+    barrier.set_nthreads(t);
+
     // read in the map, find dimensions
     bmpMap bmp_map(bmp_filename);
 
@@ -95,17 +102,16 @@ int main(int argc, char* argv){
     unsigned int dim_y = bmp_map.get_height();
 
     // initialize the start state with the RRT Tree
-    pair<int, int> root;
-    root.first = x_root;
-    root.second = y_root;
+    pair<int, int> root (x_root, y_root);
     tree.createRoot(root);
     
     /*
     initialize random sampler
     NOTE: to get random point: pair<double, double> result = uniformSample(generator, distribution);
     */
-    default_random_engine generator;
-    uniform_real_distribution<double> distribution(x_max, y_max);
+    // not sure if we need this part?
+    // default_random_engine generator;
+    // uniform_real_distribution<double> distribution(x_max, y_max);
 
     // format arguments
     sample_args sample_func_args {t, m, delta, samples, openmp_t, &bmp_map, dim_x, dim_y};
@@ -134,12 +140,12 @@ int main(int argc, char* argv){
 pair<double, double> uniformSample(default_random_engine &generator, uniform_real_distribution &distribution) {
     double x_pos = distribution(generator);
     double y_pos = distribution(generator);
-    pair<double, double> p = make_pair(x_pos, y_pos);
+    pair<double, double> p (x_pos, y_pos);
     return p;
 }
 
 
-pair<int, int> get_point(int dim_x, int dim_y) {
+pair<int, int> sample_bmp_map(int dim_x, int dim_y) {
     int x;
     int y;
     pair<int, int> point;
@@ -212,12 +218,10 @@ RRTNode create_node(int q_near_idx, pair<int, int> q_rand, int delta) {
     int y_new = (int) (sin(angle) * delta);
 
     // create new node
-    pair<int, int> pos_new;
-    pos_new.first = x_new;
-    pos_new.second = y_new;
+    pair<int, int> pos_new (x_new, y_new);
 
     int p = q_near_idx;
-    int idx = tree.size();
+    int idx = -1;   // leave this unknown for now, update when finally added to the tree
     vector<RRTNode> children;
 
     RRTNode new_node(idx, p, children, pos_new);
@@ -253,10 +257,13 @@ void sample_func(void* args_struct) {
         // container for storing locally-sampled nodes
         vector<RRTNode> local_bin;
 
+        // sync threads
+        barrier.wait();
+
         for (int j = 0; j < m; ++j) {
             // sample random location on map
             pair<double, double> q_rand;
-            q_rand = get_point(dim_x, dim_y); // TODO: check in about the uniformSample function
+            q_rand = sample_bmp_map(dim_x, dim_y);
 
             // find nearest neighbor to q_rand
             int neighbor_idx = tree.nearest_neighbor_search(q_rand, openmp_t);
@@ -264,16 +271,21 @@ void sample_func(void* args_struct) {
             // create new node for tree
             RRTNode new_node = create_node(neighbor_idx, q_rand, delta);
 
-             // TODO: Check if too similar and is valid        
-            pair<double, double> q_new(new_node.getPosition());
-                                                        /*need to make checkSimilar func*/
-            if(local_map.checkFree(q_new.first, q_new.second) && checkSimilar(q_new)){
-                // If true add to local bin 
-
+            // TODO: Check if too similar and is valid        
+            pair<double, double> q_new (new_node.getPosition());
+            
+            // need to make checkSimilar func
+            if (local_map.checkFree(q_new) && checkSimilar(q_new)) {
+                local_bin.push_back(new_node);
             }
-
         }
-        // TODO: Add to global bin
 
+        // sync threads
+        barrier.wait();
+
+        // TODO: Add to global bin
+        for (int i = 0; i < m; ++i) {
+            tree.addNode(local_bin[i]);
+        }
     }
 }

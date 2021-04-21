@@ -12,7 +12,7 @@ class bmpMap {
       void printMap();
       unsigned int get_width();
       unsigned int get_height();
-      bool checkFree(int x, int y);
+      bool checkFree(std::pair<int, int> q);
       
       bitmap_image img;
       unsigned int width;

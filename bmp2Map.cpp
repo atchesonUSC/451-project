@@ -70,7 +70,12 @@ void bmpMap::printMap() {
     }
 }
 
-bool bmpMap::checkFree(int x, int y) {
+bool bmpMap::checkFree(std::pair<int, int> q) {
+    int x, y;
+
+    x = q.first;
+    y = q.second;
+    
     return map[y][x] == 1;
 }
 

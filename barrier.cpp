@@ -1,5 +1,6 @@
 #include "barrier.hpp"
 
+
 Barrier::Barrier(int t) {
 	// setup threads and count
 	count = 0;
@@ -15,9 +16,9 @@ void Barrier::wait() {
 	pthread_mutex_lock(&lock);
 
 	// update count of arrived threads
-    thread_count++;
-    if (thread_count == t) {
-        thread_count = 0;
+    count++;
+    if (count == nthreads) {
+        count = 0;
         pthread_cond_broadcast(&all_here);
     } else {
         pthread_cond_wait(&all_here, &lock);
@@ -25,4 +26,8 @@ void Barrier::wait() {
 
     // release lock
     pthread_mutex_unlock(&lock);
+}
+
+void Barrier::set_nthreads(int n) {
+    nthreads = n;
 }
