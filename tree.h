@@ -50,9 +50,10 @@ public:
     ~RRTTree();
     void createRoot(std::pair<double, double> start_pos); //FIXME create root somewhere
     int nearest_neighbor_search(std::pair<double, double> pos, int openmp_thread_count);
-    void addNode(int p, std::pair<double, double> pos);
+    //void addNode(int p, std::pair<double, double> pos);
+    void addNode(RRTNode new_node);
     RRTNode get_node(int idx);
-    int size();
+    // int size();
 
 private:
     std::vector<RRTNode> nodes;

@@ -235,7 +235,6 @@ performs sampling operations
 */
 void sample_func(void* args_struct) {
     sample_args* args;
-    int** local_map;
     int samples, t, m, delta, dim_x, dim_y, openmp_t;
 
     // setup arguments
@@ -272,7 +271,7 @@ void sample_func(void* args_struct) {
             RRTNode new_node = create_node(neighbor_idx, q_rand, delta);
 
             // TODO: Check if too similar and is valid        
-            pair<double, double> q_new (new_node.getPosition());
+            pair<int, int> q_new ((int) new_node.getPosition().first, (int) new_node.getPosition().first);
             
             // need to make checkSimilar func
             if (local_map.checkFree(q_new) && checkSimilar(q_new)) {
