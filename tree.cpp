@@ -21,11 +21,11 @@ struct idx_val_pair distance_redux(const struct idx_val_pair omp_out, const stru
 
 // ========== RRTNode ========== //
 
-RRTNode::RRTNode(int idx, int p, std::vector<int> c, std::pair<double, double> pos) : id(idx), parent(p), children(c), position(pos) {}
+RRTNode::RRTNode(int idx, int p, std::vector<int> c, std::pair<double, double> pos) : idx(idx), parent(p), children(c), position(pos) {}
 
-// int RRTNode::getId(){
-//     return id;
-// }
+int RRTNode::getIdx(){
+    return idx;
+}
 
 int RRTNode::getParent(){
     return parent;

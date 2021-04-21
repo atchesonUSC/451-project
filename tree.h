@@ -25,12 +25,12 @@ struct idx_val_pair distance_redux(const struct idx_val_pair omp_out, const stru
 class RRTNode {
 public:
     RRTNode(int idx, int p, std::vector<int> c, std::pair<double, double> pos);
-    // int getId();
     int getParent();
     void setParent(int p);
     std::vector<int> getChildren();
     void addChild(int child_idx);
     std::pair<double, double> getPosition();
+    int getIdx();
     void setIdx(int idx);
     
 private:
