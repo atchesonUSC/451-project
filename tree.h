@@ -9,16 +9,11 @@
 
 // ========== Miscellaneous items ========== //
 
-// useful for the reduction phase
-struct args_info {
-    int chunk_sz;
-    std::pair<int, int> q_rand;
-    std::pair<int, double>* results;
-};
 
+/*
 // reduction phase function
 struct idx_val_pair distance_redux(const struct idx_val_pair omp_out, const struct idx_val_pair omp_in);
-
+*/
 
 
 // ========== RRTNode class ========== //
@@ -35,8 +30,7 @@ public:
     std::pair<int, int> getPosition();
     int getIdx();
     void setIdx(int idx);
-    
-private:
+
     int idx; 			          //index of RRTNode in tree vector
     int parent; 		          //index of parent in tree vector;
     std::vector<int> children;    //indices of children in tree vector;
@@ -52,7 +46,7 @@ public:
     RRTTree();
     ~RRTTree();
     void createRoot(std::pair<int, int> start_pos);
-    int nearest_neighbor_search(std::pair<int, int> pos, int openmp_thread_count);
+    int nearest_neighbor_search_new(std::pair<int, int> q_rand, int t);
     void addNode(RRTNode new_node);
     RRTNode get_node(int idx);
     int get_size();
@@ -60,4 +54,13 @@ public:
 private:
     std::vector<RRTNode> nodes;
     pthread_mutex_t tree_lock;
+};
+
+
+// useful for the reduction phase
+struct args_info {
+    int chunk_sz;
+    std::pair<int, int> q_rand;
+    std::pair<int, double>* results;
+    std::vector<RRTNode> tree_nodes;
 };

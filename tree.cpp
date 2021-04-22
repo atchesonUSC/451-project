@@ -1,5 +1,7 @@
 #include "tree.h"
 #include <cmath>
+#include <cfloat>
+#include <cstdio>
 
 
 // ========== Miscellaneous ========== //
@@ -10,6 +12,7 @@ double distance(std::pair<int, int> pos1, std::pair<int, int> pos2) {
     return std::sqrt(std::pow(dx, 2) + std::pow(dy, 2));    
 }
 
+/*
 // reduction phase function
 struct idx_val_pair distance_redux(const struct idx_val_pair omp_out, const struct idx_val_pair omp_in) {
 	if (omp_out.val < omp_in.val) {
@@ -18,6 +21,7 @@ struct idx_val_pair distance_redux(const struct idx_val_pair omp_out, const stru
 		return omp_in;
 	}
 }
+*/
 
 // ========== RRTNode ========== //
 
@@ -36,10 +40,14 @@ RRTNode& RRTNode::operator=(const RRTNode& rhs) {
     if (&rhs != this)
     {
         this->setIdx(rhs.getIdx());
-		this->setParent(rhs.getParent());
-		this->position = std::make_pair(rhs.getPosition().first, rhs.getPosition().second);
+		int parent = rhs.getParent();
+		this->setParent(parent);
+
+		int pos1 = rhs.getPosition().first;
+		int pos2 = rhs.getPosition().second;
+		this->position = std::make_pair(pos1, pos2);
         
-		this->children.clear()
+		this->children.clear();
         for (std::size_t i = 0; i < rhs.getChildren().size(); ++i) {
             this->children.push_back(rhs.getChildren()[i]);
         }
@@ -79,9 +87,10 @@ void RRTNode::setIdx(int idx) {
 
 RRTTree::RRTTree() {
 	// initialize the mutex
-	if (pthread_mutex_init(&tree_lock, nullptr) != 0) {
+	if (pthread_mutex_init(&tree_lock, NULL) != 0) {
 		//return 1;
 	}
+	printf("rrt tree constructor");
 }
 
 RRTTree::~RRTTree() {}
@@ -116,6 +125,7 @@ int RRTTree::get_size() {
 	return nodes.size();
 }
 
+/*
 int RRTTree::nearest_neighbor_search(std::pair<int, int> p, int t) {
 	// set number of threads for openMP execution
 	omp_set_num_threads(t);
@@ -126,15 +136,15 @@ int RRTTree::nearest_neighbor_search(std::pair<int, int> p, int t) {
 		omp_out = distance_redux(omp_out, omp_in)) \
 		initializer(omp_priv = {0, 0})
 
-	/*
-	Using openMP, each spawned thread with calculate the node of the
-	tree section for which it is responsible that is closest to the
-	randomly chosen node.
+	
+	//Using openMP, each spawned thread with calculate the node of the
+	//tree section for which it is responsible that is closest to the
+	//randomly chosen node.
 
-	Once all threads have completed this task, they will then reduce
-	their index-distance pairs by comparing them and returning back
-	the pair that has the smallest distance value. 
-	*/
+	//Once all threads have completed this task, they will then reduce
+	//their index-distance pairs by comparing them and returning back
+	//the pair that has the smallest distance value. 
+	
 	struct idx_val_pair min {0, INT_MAX};
 	
 	#pragma omp parallel for reduction(min_pair: min)
@@ -155,14 +165,16 @@ int RRTTree::nearest_neighbor_search(std::pair<int, int> p, int t) {
 	// return index of the nearest neigbor in the nodes vector
 	return min.idx;
 }
+*/
 
-void* RRTTree::search_partition(void* args) {
+void* search_partition(void* args) {
 	// get arguments
 	struct args_info* data = (args_info*) args;
 
 	int chunk_sz = data->chunk_sz;
 	std::pair<int, int> q_rand = data->q_rand;
 	std::pair<int, double>* results = data->results;
+	std::vector<RRTNode> nodes (data->tree_nodes);
 
 	// get the thread's ID
 	int tid = pthread_self();
@@ -173,14 +185,16 @@ void* RRTTree::search_partition(void* args) {
 	// iterate over the chunk
 	for (int i = start; i < start+chunk_sz; ++i) {
 		// calculate distance between q_rand and node in partition
-		double d = distance(q_rand, this->nodes[i].getPosition());
+		double d = distance(q_rand, nodes[i].getPosition());
 
 		// compare to current value in results
 		if (results[i].second > d) {
 			std::pair<int, double> updated (i, d);
-			results[i] = updated;
+			results[tid] = updated;
 		}
 	}
+
+	pthread_exit(NULL);
 }
 
 // new implementation for potential nearest neighbor search using only pthreads
@@ -196,11 +210,11 @@ int RRTTree::nearest_neighbor_search_new(std::pair<int, int> q_rand, int t) {
 
 	// initiliaze results array
 	for (int i = 0; i < t; ++i) {
-		std::pair<int, double> tmp (-1, MAXFLOAT);
+		std::pair<int, double> tmp (-1, FLT_MAX);
 		results[i] = tmp;
 	}
 
-	struct args_info* search_partition_args {chunk_sz, q_rand, results};
+	struct args_info search_partition_args {chunk_sz, q_rand, results, nodes};
 	// have each thread search its partition
 	for (int i = 0; i < chunk_sz; ++i) {
 		pthread_create(&threads[i], NULL, search_partition, (void*) &search_partition_args);
@@ -208,7 +222,7 @@ int RRTTree::nearest_neighbor_search_new(std::pair<int, int> q_rand, int t) {
 
 	// wait for all threads to finish
 	for (int i = 0; i < t; ++i) {
-		pthread_join(threads[i]);
+		pthread_join(threads[i], NULL);
 	}
 
 	// after all threads finish, scan over the results and find smallest distance, return the index

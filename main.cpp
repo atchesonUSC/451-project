@@ -55,7 +55,6 @@ Command Line Arguments:
 */
 
 
-
 // RRTTree: Global tree structure for storing nodes
 RRTTree tree;
 
@@ -63,6 +62,8 @@ RRTTree tree;
 Barrier barrier;
 
 int main(int argc, char* argv[]){
+
+    printf("before reading args");
 
     if (argc != 2) {
         cout << "Incorrect number of arguments: [program_name] [config_filename]" << endl;
@@ -260,7 +261,7 @@ void* thread_sample(void* args_struct) {
             q_rand = sample_bmp_map(dim_x, dim_y);
 
             // find nearest neighbor to q_rand
-            int neighbor_idx = tree.nearest_neighbor_search(q_rand, openmp_t);
+            int neighbor_idx = tree.nearest_neighbor_search_new(q_rand, openmp_t);
 
             // create new node for tree
             RRTNode new_node = create_node(neighbor_idx, q_rand, delta);
@@ -268,7 +269,7 @@ void* thread_sample(void* args_struct) {
             //Check if too similar   
                 // find nearest neighbor to q_new, if the same nnearest neighbor it is not too similar
             pair<int, int> q_new (new_node.getPosition());
-            int neighbor_idx2 = tree.nearest_neighbor_search(q_new, openmp_t);
+            int neighbor_idx2 = tree.nearest_neighbor_search_new(q_new, openmp_t);
             //if valid and not too similar pushback
             if (local_map.checkFree(q_new) && neighbor_idx == neighbor_idx2) {
                 local_bin.push_back(new_node);
