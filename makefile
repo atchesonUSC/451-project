@@ -1,7 +1,7 @@
 # *****************************************************
 # Variables to control Makefile operation
  
-CC = gcc
+CC = g++
 CFLAGS_ALL = -O3 -Wall -g -lpthread -fopenmp
 CFLAGS_NONE = -O3 -Wall -g
 CFLAGS_OPENMP = -O3 -Wall -g -fopenmp
