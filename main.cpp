@@ -63,6 +63,9 @@ Barrier barrier;
 
 int main(int argc, char* argv){
 
+    // just for making sure we can compile
+    exit(0)
+
     if (argc != 2) {
         cout << "Incorrect number of arguments: [program_name] [config_filename]" << endl;
         return -1;
