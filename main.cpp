@@ -168,7 +168,6 @@ parse configuration file (contains setup arguments)
 vector<string> parse_config_file(string filename) {
     int argc;
     string line;
-    vector<string> args;
     ifstream config_file;
       
     // open file
