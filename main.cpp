@@ -16,7 +16,7 @@ using namespace std;
 
 // function prototypes
 void* thread_sample(void* args);
-string* parse_config_file(string filename);
+vector<string> parse_config_file(string filename);
 pair<int, int> sample_bmp_map(int dim_x, int dim_y);
 RRTNode create_node(int q_near_idx, pair<int, int> q_rand, int delta);
 
@@ -165,7 +165,7 @@ pair<int, int> sample_bmp_map(int dim_x, int dim_y) {
 /*
 parse configuration file (contains setup arguments)
 */
-string* parse_config_file(string filename) {
+vector<string> parse_config_file(string filename) {
     int argc;
     string line;
     string* args;
@@ -179,12 +179,12 @@ string* parse_config_file(string filename) {
     argc = stoi(line);
 
     // create array for storing arguments as strings
-    args = new string[argc];
+    vector<string> args;
 
     // get arguments
     for (int i = 0; i < argc; ++i) {
         getline(config_file, line);
-        args[i] = line;
+        args.push_back(line);
     }
 
     // return array of arguments

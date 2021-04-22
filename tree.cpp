@@ -1,5 +1,6 @@
 #include "tree.h"
 #include <cmath>
+#include <math.h>
 
 
 // ========== Miscellaneous ========== //
