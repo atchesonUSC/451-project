@@ -5,9 +5,9 @@
 
 // ========== Miscellaneous ========== //
 
-double distance(std::pair<double, double> pos1, std::pair<double, double> pos2) {
-    double dx = abs(pos1.first - pos2.first);
-    double dy = abs(pos1.second - pos2.second);
+double distance(std::pair<int, int> pos1, std::pair<int, int> pos2) {
+    int dx = abs(pos1.first - pos2.first);
+    int dy = abs(pos1.second - pos2.second);
     return sqrt(std::pow(dx, 2) + std::pow(dy, 2));    
 }
 
@@ -22,7 +22,7 @@ struct idx_val_pair distance_redux(const struct idx_val_pair omp_out, const stru
 
 // ========== RRTNode ========== //
 
-RRTNode::RRTNode(int idx, int p, std::vector<int> c, std::pair<double, double> pos) : idx(idx), parent(p), children(c), position(pos) {}
+RRTNode::RRTNode(int idx, int p, std::vector<int> c, std::pair<int, int> pos) : idx(idx), parent(p), children(c), position(pos) {}
 
 int RRTNode::getIdx(){
     return idx;
@@ -44,7 +44,7 @@ void RRTNode::addChild(int c){
     children.push_back(c);
 }
 
-std::pair<double, double> RRTNode::getPosition(){
+std::pair<int, int> RRTNode::getPosition(){
     return position;
 }
 
@@ -63,7 +63,7 @@ RRTTree::RRTTree() {
 
 RRTTree::~RRTTree() {}
 
-void RRTTree::createRoot(std::pair<double, double> start_pos) {
+void RRTTree::createRoot(std::pair<int, int> start_pos) {
 	std::vector<int> empty;
 	RRTNode root = RRTNode(0, -1, empty, start_pos);
 	nodes.push_back(root);
@@ -89,7 +89,7 @@ RRTNode RRTTree::get_node(int idx) {
 	return nodes[idx];
 }
 
-int RRTTree::nearest_neighbor_search(std::pair<double, double> p, int t) {
+int RRTTree::nearest_neighbor_search(std::pair<int, int> p, int t) {
 	// set number of threads for openMP execution
 	omp_set_num_threads(t);
 

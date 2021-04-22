@@ -24,12 +24,12 @@ struct idx_val_pair distance_redux(const struct idx_val_pair omp_out, const stru
 
 class RRTNode {
 public:
-    RRTNode(int idx, int p, std::vector<int> c, std::pair<double, double> pos);
+    RRTNode(int idx, int p, std::vector<int> c, std::pair<int, int> pos);
     int getParent();
     void setParent(int p);
     std::vector<int> getChildren();
     void addChild(int child_idx);
-    std::pair<double, double> getPosition();
+    std::pair<int, int> getPosition();
     int getIdx();
     void setIdx(int idx);
     
@@ -48,8 +48,8 @@ class RRTTree {
 public:
     RRTTree();
     ~RRTTree();
-    void createRoot(std::pair<double, double> start_pos); //FIXME create root somewhere
-    int nearest_neighbor_search(std::pair<double, double> pos, int openmp_thread_count);
+    void createRoot(std::pair<int, int> start_pos); //FIXME create root somewhere
+    int nearest_neighbor_search(std::pair<int, int> pos, int openmp_thread_count);
     //void addNode(int p, std::pair<double, double> pos);
     void addNode(RRTNode new_node);
     RRTNode get_node(int idx);

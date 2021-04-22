@@ -256,7 +256,7 @@ void* thread_sample(void* args_struct) {
 
         for (int j = 0; j < m; ++j) {
             // sample random location on map
-            pair<double, double> q_rand;
+            pair<int, int> q_rand;
             q_rand = sample_bmp_map(dim_x, dim_y);
 
             // find nearest neighbor to q_rand
@@ -267,8 +267,8 @@ void* thread_sample(void* args_struct) {
 
             //Check if too similar   
                 // find nearest neighbor to q_new, if the same nnearest neighbor it is not too similar
-            int neighbor_idx2 = tree.nearest_neighbor_search(new_node.getPosition(), openmp_t);
-            pair<int, int> q_new ((int) new_node.getPosition().first, (int) new_node.getPosition().first);
+            pair<int, int> q_new (new_node.getPosition());
+            int neighbor_idx2 = tree.nearest_neighbor_search(q_new, openmp_t);
             //if valid and not too similar pushback
             if (local_map.checkFree(q_new) && neighbor_idx == neighbor_idx2) {
                 local_bin.push_back(new_node);
