@@ -30,6 +30,8 @@ struct sample_args {
     bmpMap* bmp_map;
     unsigned int dim_x;
     unsigned int dim_y;
+    int x_end;
+    int y_end;
 };
 
 /*
@@ -116,7 +118,7 @@ int main(int argc, char* argv[]){
     // uniform_real_distribution<double> distribution(x_max, y_max);
 
     // format arguments
-    sample_args sample_func_args {t, m, delta, samples, openmp_t, &bmp_map, dim_x, dim_y};
+    sample_args sample_func_args {t, m, delta, samples, openmp_t, &bmp_map, dim_x, dim_y, x_end, y_end};
 
     // generate threads to run sampling
     pthread_t thread_ids[t];
