@@ -64,8 +64,6 @@ Barrier barrier;
 
 int main(int argc, char* argv[]){
 
-    // just for making sure we can compile
-    exit(0);
 
     if (argc != 2) {
         cout << "Incorrect number of arguments: [program_name] [config_filename]" << endl;
@@ -75,7 +73,7 @@ int main(int argc, char* argv[]){
     // parse argument file
     vector<string> config;
     string config_filename;
-
+    printf("before first argv[1]");
     config_filename = string(argv[1]);
     config = parse_config_file(config_filename);
    
@@ -183,13 +181,13 @@ vector<string> parse_config_file(string filename) {
 
     // create array for storing arguments as strings
     vector<string> args;
-
+    printf("before for loop");
     // get arguments
     for (int i = 0; i < argc; ++i) {
         getline(config_file, line);
         args.push_back(line);
     }
-
+    printf("here");
     // return array of arguments
     return args;
 }
