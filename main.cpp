@@ -34,6 +34,7 @@ struct sample_args {
     int y_end;
 };
 
+
 /*
 ===================================
 -----------------------
@@ -55,7 +56,6 @@ Command Line Arguments:
 
 
 
-
 // RRTTree: Global tree structure for storing nodes
 RRTTree tree;
 
@@ -63,7 +63,6 @@ RRTTree tree;
 Barrier barrier;
 
 int main(int argc, char* argv[]){
-
 
     if (argc != 2) {
         cout << "Incorrect number of arguments: [program_name] [config_filename]" << endl;

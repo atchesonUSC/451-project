@@ -10,9 +10,10 @@
 // ========== Miscellaneous items ========== //
 
 // useful for the reduction phase
-struct idx_val_pair {
-    int idx;
-    double val;
+struct args_info {
+    int chunk_sz;
+    std::pair<int, int> q_rand;
+    std::pair<int, double>* results;
 };
 
 // reduction phase function
@@ -25,6 +26,8 @@ struct idx_val_pair distance_redux(const struct idx_val_pair omp_out, const stru
 class RRTNode {
 public:
     RRTNode(int idx, int p, std::vector<int> c, std::pair<int, int> pos);
+    RRTNode(const RRTNode& rhs);
+    RRTNode& operator=(const RRTNode& rhs);
     int getParent();
     void setParent(int p);
     std::vector<int> getChildren();
@@ -48,9 +51,8 @@ class RRTTree {
 public:
     RRTTree();
     ~RRTTree();
-    void createRoot(std::pair<int, int> start_pos); //FIXME create root somewhere
+    void createRoot(std::pair<int, int> start_pos);
     int nearest_neighbor_search(std::pair<int, int> pos, int openmp_thread_count);
-    //void addNode(int p, std::pair<double, double> pos);
     void addNode(RRTNode new_node);
     RRTNode get_node(int idx);
     int get_size();
