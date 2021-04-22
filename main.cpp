@@ -235,7 +235,6 @@ performs sampling operations
 */
 void sample_func(void* args_struct) {
     sample_args* args;
-    int** local_map;
     int samples, t, m, delta, dim_x, dim_y, openmp_t;
 
     // setup arguments
@@ -271,11 +270,12 @@ void sample_func(void* args_struct) {
             // create new node for tree
             RRTNode new_node = create_node(neighbor_idx, q_rand, delta);
 
-            // TODO: Check if too similar and is valid        
-            pair<double, double> q_new (new_node.getPosition());
-            
-            // need to make checkSimilar func
-            if (local_map.checkFree(q_new) && checkSimilar(q_new)) {
+            //Check if too similar   
+                // find nearest neighbor to q_new, if the same nnearest neighbor it is not too similar
+            int neighbor_idx2 = tree.nearest_neighbor_search(new_node.getPosition(), openmp_t);
+            pair<int, int> q_new ((int) new_node.getPosition().first, (int) new_node.getPosition().first);
+            //if valid and not too similar pushback
+            if (local_map.checkFree(q_new) && neighbor_idx == neighbor_idx2) {
                 local_bin.push_back(new_node);
             }
         }

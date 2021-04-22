@@ -21,10 +21,10 @@ struct idx_val_pair distance_redux(const struct idx_val_pair omp_out, const stru
 
 // ========== RRTNode ========== //
 
-RRTNode::RRTNode(int idx, int p, std::vector<int> c, std::pair<double, double> pos) : id(idx), parent(p), children(c), position(pos) {}
+RRTNode::RRTNode(int idx, int p, std::vector<int> c, std::pair<double, double> pos) : idx(idx), parent(p), children(c), position(pos) {}
 
-int RRTNode::getId(){
-    return id;
+int RRTNode::getIdx(){
+    return idx;
 }
 
 int RRTNode::getParent(){
@@ -56,14 +56,14 @@ void RRTNode::setIdx(int idx) {
 RRTTree::RRTTree() {
 	// initialize the mutex
 	if (pthread_mutex_init(&tree_lock, nullptr) != 0) {
-		return 1;
+		//return 1;
 	}
 }
 
 RRTTree::~RRTTree() {}
 
 void RRTTree::createRoot(std::pair<double, double> start_pos) {
-	vector<int> empty;
+	std::vector<int> empty;
 	RRTNode root = RRTNode(0, -1, empty, start_pos);
 	nodes.push_back(root);
 }
@@ -75,7 +75,7 @@ void RRTTree::addNode(RRTNode new_node){
 	pthread_mutex_lock(&tree_lock);
 
 	parent_idx = new_node.getParent();
-	new_node_idx = tree.size();
+	new_node_idx = this->nodes.size();
 	new_node.setIdx(new_node_idx);
 
     nodes[parent_idx].addChild(new_node_idx);
