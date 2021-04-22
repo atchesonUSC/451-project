@@ -9,7 +9,7 @@
 
 #include "tree.h"
 #include "bmp2Map.h"
-#include "barrier.hpp"
+#include "barrier.h"
 
 using namespace std;
 
