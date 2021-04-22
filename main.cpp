@@ -71,7 +71,7 @@ int main(int argc, char* argv[]){
     }
 
     // parse argument file
-    string* config;
+    vector<string> config;
     string config_filename;
 
     config_filename = string(argv[1]);
@@ -168,7 +168,7 @@ parse configuration file (contains setup arguments)
 vector<string> parse_config_file(string filename) {
     int argc;
     string line;
-    string* args;
+    vector<string> args;
     ifstream config_file;
       
     // open file
