@@ -1,5 +1,5 @@
 #include "tree.h"
-#include "math.h"
+#include <cmath>
 
 
 // ========== Miscellaneous ========== //
