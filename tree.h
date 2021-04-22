@@ -53,7 +53,7 @@ public:
     //void addNode(int p, std::pair<double, double> pos);
     void addNode(RRTNode new_node);
     RRTNode get_node(int idx);
-    // int size();
+    int get_size();
 
 private:
     std::vector<RRTNode> nodes;

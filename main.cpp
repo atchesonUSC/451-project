@@ -131,6 +131,8 @@ int main(int argc, char* argv[]){
         pthread_join(i, NULL);
     }
 
+    printf("size of tree: %d\n", tree.get_size());
+
     return 0;
 }
 
