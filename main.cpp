@@ -15,7 +15,7 @@ using namespace std;
 
 
 // function prototypes
-void thread_sample(void* args);
+void* thread_sample(void* args);
 string* parse_config_file(string filename);
 pair<int, int> sample_bmp_map(int dim_x, int dim_y);
 RRTNode create_node(int q_near_idx, pair<int, int> q_rand, int delta);
@@ -283,4 +283,5 @@ void* thread_sample(void* args_struct) {
             tree.addNode(local_bin[i]);
         }
     }
+    pthread_exit(NULL);
 }

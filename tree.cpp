@@ -88,7 +88,7 @@ RRTNode RRTTree::get_node(int idx) {
 	return nodes[idx];
 }
 
-int RRTTREE::nearest_neighbor_search(std::pair<double, double> p, int t) {
+int RRTTree::nearest_neighbor_search(std::pair<double, double> p, int t) {
 	// set number of threads for openMP execution
 	omp_set_num_threads(t);
 
