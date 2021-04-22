@@ -1,14 +1,13 @@
 #include "tree.h"
 #include <cmath>
-#include <math.h>
 
 
 // ========== Miscellaneous ========== //
 
 double distance(std::pair<int, int> pos1, std::pair<int, int> pos2) {
-    int dx = abs(pos1.first - pos2.first);
-    int dy = abs(pos1.second - pos2.second);
-    return sqrt(std::pow(dx, 2) + std::pow(dy, 2));    
+    int dx = std::abs(pos1.first - pos2.first);
+    int dy = std::abs(pos1.second - pos2.second);
+    return std::sqrt(std::pow(dx, 2) + std::pow(dy, 2));    
 }
 
 // reduction phase function
