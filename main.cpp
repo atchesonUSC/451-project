@@ -15,11 +15,10 @@ using namespace std;
 
 
 // function prototypes
-void sample_func(void* args);
+void thread_sample(void* args);
 string* parse_config_file(string filename);
 pair<int, int> sample_bmp_map(int dim_x, int dim_y);
 RRTNode create_node(int q_near_idx, pair<int, int> q_rand, int delta);
-pair<double, double> uniformSample(default_random_engine &generator, uniform_real_distribution &distribution);
 
 // Struct for passing arguments into the function of pthread_create()
 struct sample_args {
@@ -61,10 +60,10 @@ RRTTree tree;
 // for barrier sync
 Barrier barrier;
 
-int main(int argc, char* argv){
+int main(int argc, char* argv[]){
 
     // just for making sure we can compile
-    exit(0)
+    exit(0);
 
     if (argc != 2) {
         cout << "Incorrect number of arguments: [program_name] [config_filename]" << endl;
@@ -122,7 +121,7 @@ int main(int argc, char* argv){
     // generate threads to run sampling
     pthread_t thread_ids[t];
     for (int i = 0; i < t; ++i) {
-        pthread_create(&thread_ids[i], NULL, &some_sample_func, (void*) &sample_args);
+        pthread_create(&thread_ids[i], NULL, &thread_sample, (void*) &sample_args);
     }
     
     // wait for threads to finish
@@ -139,13 +138,6 @@ int main(int argc, char* argv){
 
 // ============================================ Helper Functions ============================================ //
 
-
-pair<double, double> uniformSample(default_random_engine &generator, uniform_real_distribution &distribution) {
-    double x_pos = distribution(generator);
-    double y_pos = distribution(generator);
-    pair<double, double> p (x_pos, y_pos);
-    return p;
-}
 
 
 pair<int, int> sample_bmp_map(int dim_x, int dim_y) {
@@ -236,7 +228,7 @@ RRTNode create_node(int q_near_idx, pair<int, int> q_rand, int delta) {
 /*
 performs sampling operations
 */
-void sample_func(void* args_struct) {
+void thread_sample(void* args_struct) {
     sample_args* args;
     int samples, t, m, delta, dim_x, dim_y, openmp_t;
 

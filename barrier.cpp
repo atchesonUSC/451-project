@@ -1,10 +1,10 @@
-#include "barrier.hpp"
+#include "barrier.h"
 
 
-Barrier::Barrier(int t) {
+Barrier::Barrier() {
 	// setup threads and count
 	count = 0;
-	nthreads = t;
+    nthreads = 0;
 
 	// initialize lock and condition
 	pthread_mutex_init(&lock, NULL);

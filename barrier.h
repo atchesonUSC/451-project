@@ -1,5 +1,5 @@
-#ifndef barrier_hpp
-#define barrier_hpp
+#ifndef barrier_h
+#define barrier_h
 
 #include <stdio.h>
 #include <pthread.h>
@@ -14,7 +14,7 @@ class Barrier {
         pthread_mutex_t lock;
         pthread_cond_t all_here;
     public:
-        Barrier(int t);
+        Barrier();
         ~Barrier(void);
         // int arrived(void);
         // int done(int p);
@@ -22,4 +22,4 @@ class Barrier {
         void set_nthreads(int n);
 };
 
-#endif /* barrier_hpp */
+#endif /* barrier_h */
