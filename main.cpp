@@ -121,7 +121,7 @@ int main(int argc, char* argv[]){
     // generate threads to run sampling
     pthread_t thread_ids[t];
     for (int i = 0; i < t; ++i) {
-        pthread_create(&thread_ids[i], NULL, &thread_sample, (void*) &sample_args);
+        pthread_create(&thread_ids[i], NULL, thread_sample, (void*) &sample_func_args);
     }
     
     // wait for threads to finish
@@ -217,7 +217,7 @@ RRTNode create_node(int q_near_idx, pair<int, int> q_rand, int delta) {
 
     int p = q_near_idx;
     int idx = -1;   // leave this unknown for now, update when finally added to the tree
-    vector<RRTNode> children;
+    vector<int> children;
 
     RRTNode new_node(idx, p, children, pos_new);
     
@@ -228,7 +228,7 @@ RRTNode create_node(int q_near_idx, pair<int, int> q_rand, int delta) {
 /*
 performs sampling operations
 */
-void thread_sample(void* args_struct) {
+void* thread_sample(void* args_struct) {
     sample_args* args;
     int samples, t, m, delta, dim_x, dim_y, openmp_t;
 
