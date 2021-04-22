@@ -1,1 +1,10 @@
-// config file for passing arguments
+ex-config-space.bmp
+10
+10
+1
+1000
+10
+2
+650
+100
+4
