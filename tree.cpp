@@ -110,10 +110,10 @@ int RRTTree::nearest_neighbor_search(std::pair<double, double> p, int t) {
 	struct idx_val_pair min {0, INT_MAX};
 	
 	#pragma omp parallel for reduction(min_pair: min)
-	for (int i = 0; i < nodes.size(); ++i) {
+	for (int i = 0; i < this->nodes.size(); ++i) {
 		
 		// calculate distance between sampled node and tree node
-		double d = distance(p, nodes[i].getPosition());
+		double d = distance(p, this->nodes[i].getPosition());
 
 		// check if distance is less than the current minimum distance
 		if (d < min.val) {
