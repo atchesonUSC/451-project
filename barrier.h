@@ -14,7 +14,7 @@ class Barrier {
         pthread_cond_t all_here;
     public:
         Barrier();
-        ~Barrier(void);
+        ~Barrier();
         void wait(void);
         void set_nthreads(int n);
 };

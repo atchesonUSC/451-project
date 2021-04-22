@@ -11,6 +11,8 @@ Barrier::Barrier() {
 	pthread_cond_init(&all_here, NULL);
 }
 
+Barrier::~Barrier() {}
+
 void Barrier::wait() {
 	// acquire lock
 	pthread_mutex_lock(&lock);
