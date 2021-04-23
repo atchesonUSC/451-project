@@ -81,7 +81,6 @@ RRTTree::RRTTree() {
 	if (pthread_mutex_init(&tree_lock, NULL) != 0) {
 		//return 1;
 	}
-	printf("rrt tree constructor");
 }
 
 RRTTree::~RRTTree() {}
