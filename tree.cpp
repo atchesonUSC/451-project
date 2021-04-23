@@ -9,8 +9,8 @@
 double distance(std::pair<int, int> pos1, std::pair<int, int> pos2) {
     int dx = std::abs(pos1.first - pos2.first);
     int dy = std::abs(pos1.second - pos2.second);
-    
-	return std::sqrt(std::pow(dx, 2) + std::pow(dy, 2));    
+
+    return std::sqrt(std::pow(dx, 2) + std::pow(dy, 2));    
 }
 
 
@@ -19,10 +19,10 @@ double distance(std::pair<int, int> pos1, std::pair<int, int> pos2) {
 RRTNode::RRTNode(int idx, int p, std::vector<int> c, std::pair<int, int> pos) : idx(idx), parent(p), children(c), position(pos) {}
 
 RRTNode::RRTNode(const RRTNode& rhs)
-:idx(rhs.getIdx())
-, parent(rhs.getParent())
-, children(rhs.getChildren())
-, position(rhs.getPosition()) {
+:idx(rhs.idx)
+, parent(rhs.parent)
+, children(rhs.children)
+, position(rhs.position) {
 
 }
 
@@ -30,7 +30,7 @@ RRTNode& RRTNode::operator=(const RRTNode& rhs) {
 	// 1. First check that we're not self-assigning
     if (&rhs != this) {
         this->idx = rhs.idx;
-		int parent = rhs.p;
+		int parent = rhs.parent;
 		this->parent = parent;
 
 		int pos1 = rhs.position.first;
@@ -126,7 +126,7 @@ void* search_partition(void* args) {
 	std::vector<RRTNode> nodes (data->tree_nodes);
 
 	// get the thread's ID
-	int tid = pthread_self();
+	unsigned long int tid = (unsigned long int) pthread_self();
 
 	// find the starting index
 	int start = tid * chunk_sz;
@@ -163,7 +163,7 @@ int RRTTree::nearest_neighbor_search_new(std::pair<int, int> q_rand, int t) {
 		results[i] = tmp;
 	}
 
-	struct args_info search_partition_args {chunk_sz, q_rand, results, nodes};
+	struct args_info search_partition_args = {chunk_sz, q_rand, results, nodes};
 	// have each thread search its partition
 	for (int i = 0; i < chunk_sz; ++i) {
 		pthread_create(&threads[i], NULL, search_partition, (void*) &search_partition_args);
@@ -171,7 +171,11 @@ int RRTTree::nearest_neighbor_search_new(std::pair<int, int> q_rand, int t) {
 
 	// wait for all threads to finish
 	for (int i = 0; i < t; ++i) {
-		pthread_join(threads[i], NULL);
+		int status = pthread_join(threads[i], NULL);
+		if (status != 0) {
+			printf("[ERROR] Issue with thread join in nearest neighbor...");
+			return 1;
+		}
 	}
 
 	// after all threads finish, scan over the results and find smallest distance, return the index

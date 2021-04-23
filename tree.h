@@ -1,6 +1,5 @@
 #include <vector>
 #include <utility>
-#include <omp.h>
 #include <cmath>
 #include <limits.h>
 #include <pthread.h>

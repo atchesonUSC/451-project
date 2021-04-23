@@ -1,5 +1,6 @@
 #include <vector>
 #include <string>
+
 #include "bitmap_image.hpp"
 
 
@@ -18,6 +19,4 @@ class bmpMap {
       unsigned int width;
       unsigned int height;
       std::vector<std::vector<int> > map;
-   private:
-
 };

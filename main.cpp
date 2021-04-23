@@ -105,17 +105,21 @@ int main(int argc, char* argv[]) {
     tree.createRoot(root);
 
     // format arguments
-    sample_args sample_func_args {t, m, delta, samples, openmp_t, &bmp_map, dim_x, dim_y, x_end, y_end};
+    sample_args sample_func_args = {t, m, delta, samples, openmp_t, &bmp_map, dim_x, dim_y, x_end, y_end};
 
     // generate threads to run sampling
-    pthread_t thread_ids[t];
+    pthread_t threads[t];
     for (int i = 0; i < t; ++i) {
-        pthread_create(&thread_ids[i], NULL, thread_sample, (void*) &sample_func_args);
+        pthread_create(&threads[i], NULL, thread_sample, (void*) &sample_func_args);
     }
     
     // wait for threads to finish
     for (int i = 0; i < t; ++i) {
-        pthread_join(i, NULL);
+        int status = pthread_join(threads[i], NULL);
+	if (status != 0) {
+	    printf("[ERROR] Issue with thread join in main...");
+	    return 1;
+	}
     }
 
     printf("size of tree: %d\n", tree.get_size());
