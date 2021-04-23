@@ -7,15 +7,6 @@
 #include <algorithm>
 
 
-// ========== Miscellaneous items ========== //
-
-
-/*
-// reduction phase function
-struct idx_val_pair distance_redux(const struct idx_val_pair omp_out, const struct idx_val_pair omp_in);
-*/
-
-
 // ========== RRTNode class ========== //
 
 class RRTNode {

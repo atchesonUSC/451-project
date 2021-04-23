@@ -61,9 +61,7 @@ RRTTree tree;
 // for barrier sync
 Barrier barrier;
 
-int main(int argc, char* argv[]){
-
-    printf("before reading args");
+int main(int argc, char* argv[]) {
 
     if (argc != 2) {
         cout << "Incorrect number of arguments: [program_name] [config_filename]" << endl;
@@ -73,7 +71,6 @@ int main(int argc, char* argv[]){
     // parse argument file
     vector<string> config;
     string config_filename;
-    printf("before first argv[1]");
     config_filename = string(argv[1]);
     config = parse_config_file(config_filename);
    
@@ -106,14 +103,6 @@ int main(int argc, char* argv[]){
     // initialize the start state with the RRT Tree
     pair<int, int> root (x_root, y_root);
     tree.createRoot(root);
-    
-    /*
-    initialize random sampler
-    NOTE: to get random point: pair<double, double> result = uniformSample(generator, distribution);
-    */
-    // not sure if we need this part?
-    // default_random_engine generator;
-    // uniform_real_distribution<double> distribution(x_max, y_max);
 
     // format arguments
     sample_args sample_func_args {t, m, delta, samples, openmp_t, &bmp_map, dim_x, dim_y, x_end, y_end};
@@ -181,13 +170,12 @@ vector<string> parse_config_file(string filename) {
 
     // create array for storing arguments as strings
     vector<string> args;
-    printf("before for loop");
     // get arguments
     for (int i = 0; i < argc; ++i) {
         getline(config_file, line);
         args.push_back(line);
     }
-    printf("here");
+
     // return array of arguments
     return args;
 }
@@ -267,9 +255,10 @@ void* thread_sample(void* args_struct) {
             RRTNode new_node = create_node(neighbor_idx, q_rand, delta);
 
             //Check if too similar   
-                // find nearest neighbor to q_new, if the same nnearest neighbor it is not too similar
+            // find nearest neighbor to q_new, if the same nearest neighbor it is not too similar
             pair<int, int> q_new (new_node.getPosition());
             int neighbor_idx2 = tree.nearest_neighbor_search_new(q_new, openmp_t);
+            
             //if valid and not too similar pushback
             if (local_map.checkFree(q_new) && neighbor_idx == neighbor_idx2) {
                 local_bin.push_back(new_node);
