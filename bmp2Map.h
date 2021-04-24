@@ -1,8 +1,6 @@
 #include <vector>
 #include <string>
 
-#include "bitmap_image.hpp"
-
 
 class bmpMap {
    public:
@@ -15,8 +13,7 @@ class bmpMap {
       unsigned int get_height();
       bool checkFree(std::pair<int, int> q);
       
-      bitmap_image img;
       unsigned int width;
       unsigned int height;
-      std::vector<std::vector<int> > map;
+      std::vector<std::string> bitmap;
 };

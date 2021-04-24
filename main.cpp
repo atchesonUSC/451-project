@@ -116,13 +116,13 @@ int main(int argc, char* argv[]) {
     // wait for threads to finish
     for (int i = 0; i < t; ++i) {
         int status = pthread_join(threads[i], NULL);
-	if (status != 0) {
-	    printf("[ERROR] Issue with thread join in main...");
-	    return 1;
-	}
+	    if (status != 0) {
+	        printf("[ERROR] Issue with thread join in main...");
+	        return 1;
+	    }
     }
 
-    printf("size of tree: %d\n", tree.get_size());
+    printf("Program exiting...");
 
     return 0;
 }
@@ -228,7 +228,7 @@ void* thread_sample(void* args_struct) {
     // setup arguments
     args = (sample_args*) args_struct;
 
-    bmpMap local_map(*args->bmp_map);
+    bmpMap local_map(*(args->bmp_map));
 
     t = args->t;
     m = args->m;

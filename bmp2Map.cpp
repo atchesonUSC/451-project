@@ -1,42 +1,40 @@
+#include <fstream>
+#include <iostream>
+
 #include "bmp2Map.h"
 
 
 bmpMap::bmpMap(std::string& filename)
 {
-    bitmap_image image(filename);
-    img = image;
-    height = image.height();
-    width = image.width();
-    
-    //Create map
-    for (std::size_t y = 0; y < height; ++y) {
-        std::vector<int> newRow;
-        map.push_back(newRow);
+    // initialize dimensions
+    width = 0;
+    height = 0;
 
-        for (std::size_t x = 0; x < width; ++x) {
-            rgb_t color;
-            img.get_pixel(x, y, color);
-            
-            //if the color is darker than medium grey then its a zero
-            if ((color.red < 128) && (color.green < 128) && (color.blue < 128)) {
-                map[y].push_back(0);
-            } else {
-                map[y].push_back(1);
-            }
-        }
+    // create file stream
+    std::ifstream ifile (filename);
+
+    // read rows of bitmap
+    std::string line;
+    
+    while (ifile >> line) {
+        // update height
+        height++;
+
+        // add row of bitmap
+        bitmap.push_back(line);
     }
+
+    // update width
+    width = bitmap[0].length();
 }
 
 bmpMap::bmpMap(const bmpMap& rhs)
-:img(rhs.img)
-,width(rhs.width)
+:width(rhs.width)
 ,height(rhs.height)
 {
     //Create map
     for (std::size_t y = 0; y < height; ++y) {
-        std::vector<int> newRow;
-        map.push_back(newRow);
-        map[y] = rhs.map[y];
+        bitmap.push_back(rhs.bitmap[y]);
     }
 }
 
@@ -46,14 +44,11 @@ bmpMap& bmpMap::operator=(const bmpMap& rhs)
     // 1. First check that we're not self-assigning
     if (&rhs != this)
     {
-        this->img = rhs.img;
         this->width = rhs.width;
         this->height = rhs.height;
         //Create map
-        for (std::size_t y = 0; y < height; ++y) {
-            std::vector<int> newRow;
-            this->map.push_back(newRow);
-            this->map[y] = rhs.map[y];
+        for (int y = 0; y < height; ++y) {
+            this->bitmap.push_back(rhs.bitmap[y]);
         }
     }
     return *this;
@@ -64,7 +59,7 @@ bmpMap::~bmpMap() {}
 void bmpMap::printMap() {
     for (std::size_t y = 0; y < height; ++y) {
         for (std::size_t x = 0; x < width; ++x) {
-            printf("%d ", map[y][x]);
+            printf("%s", bitmap[y][x]);
         }
         printf("\n");
     }
@@ -76,7 +71,7 @@ bool bmpMap::checkFree(std::pair<int, int> q) {
     x = q.first;
     y = q.second;
     
-    return map[y][x] == 1;
+    return bitmap[y][x] == '  1';
 }
 
 unsigned int bmpMap::get_height() {
