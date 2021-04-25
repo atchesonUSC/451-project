@@ -1,11 +1,12 @@
 10
-ex-config-space.bmp
+map-long.txt
 10
 10
 1
-1000
-10
+512
+16
 2
 650
 100
 4
+10

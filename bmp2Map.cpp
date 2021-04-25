@@ -71,7 +71,7 @@ bool bmpMap::checkFree(std::pair<int, int> q) {
     x = q.first;
     y = q.second;
     
-    return bitmap[y][x] == '  1';
+    return bitmap[y][x] == '1';
 }
 
 unsigned int bmpMap::get_height() {

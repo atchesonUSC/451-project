@@ -6,12 +6,14 @@
 
 // ========== Miscellaneous ========== //
 
+/*
 double distance(std::pair<int, int> pos1, std::pair<int, int> pos2) {
     int dx = std::abs(pos1.first - pos2.first);
     int dy = std::abs(pos1.second - pos2.second);
 
     return std::sqrt(std::pow(dx, 2) + std::pow(dy, 2));    
 }
+*/
 
 
 // ========== RRTNode ========== //
@@ -115,9 +117,12 @@ int RRTTree::get_size() {
 	return nodes.size();
 }
 
+/*
 void* search_partition(void* args) {
 	// get arguments
-	struct args_info* data = (args_info*) args;
+	struct args_info* data = (struct args_info*) args;
+	
+	std::cerr << "start of search" << std::endl;
 
 	int chunk_sz = data->chunk_sz;
 	std::pair<int, int> q_rand = data->q_rand;
@@ -144,7 +149,9 @@ void* search_partition(void* args) {
 
 	pthread_exit(NULL);
 }
+*/
 
+/*
 // new implementation for potential nearest neighbor search using only pthreads
 int RRTTree::nearest_neighbor_search_new(std::pair<int, int> q_rand, int t) {
 	// number of nodes in tree
@@ -164,12 +171,18 @@ int RRTTree::nearest_neighbor_search_new(std::pair<int, int> q_rand, int t) {
 
 	struct args_info search_partition_args = {chunk_sz, q_rand, results, nodes};
 	// have each thread search its partition
+	std::cerr << "made in NNS before create\n";
 	for (int i = 0; i < chunk_sz; ++i) {
-		pthread_create(&threads[i], NULL, search_partition, (void*) &search_partition_args);
+		int status = pthread_create(&threads[i], NULL, &search_partition, (void*) &search_partition_args);
+		if (status != 0) {
+			std::cerr << "did not create properly" << std::endl;
+		}
 	}
 
+	std::cerr << "made in NNS after create\n";
 	// wait for all threads to finish
 	for (int i = 0; i < t; ++i) {
+		std::cerr << "joining thread..." << std::endl;
 		int status = pthread_join(threads[i], NULL);
 		if (status != 0) {
 			printf("[ERROR] Issue with thread join in nearest neighbor...");
@@ -190,3 +203,4 @@ int RRTTree::nearest_neighbor_search_new(std::pair<int, int> q_rand, int t) {
 
 	return smallest_idx;
 }
+*/

@@ -1,4 +1,5 @@
 #include <vector>
+#include <iostream>
 #include <utility>
 #include <cmath>
 #include <limits.h>
@@ -36,12 +37,11 @@ public:
     RRTTree();
     ~RRTTree();
     void createRoot(std::pair<int, int> start_pos);
-    int nearest_neighbor_search_new(std::pair<int, int> q_rand, int t);
+    // int nearest_neighbor_search_new(std::pair<int, int> q_rand, int t);
     void addNode(RRTNode new_node);
     RRTNode get_node(int idx);
     int get_size();
 
-private:
     std::vector<RRTNode> nodes;
     pthread_mutex_t tree_lock;
 };
