@@ -58,10 +58,7 @@ bmpMap::~bmpMap() {}
 
 void bmpMap::printMap() {
     for (std::size_t y = 0; y < height; ++y) {
-        for (std::size_t x = 0; x < width; ++x) {
-            printf("%s", bitmap[y][x]);
-        }
-        printf("\n");
+        std::cout << bitmap[y] << std::endl;
     }
 }
 
@@ -70,8 +67,10 @@ bool bmpMap::checkFree(std::pair<int, int> q) {
 
     x = q.first;
     y = q.second;
-    
-    return bitmap[y][x] == '1';
+ 
+    //printf("bitmap[%d][%d]", y, x);
+
+    return bitmap[y][x] == '0';
 }
 
 unsigned int bmpMap::get_height() {

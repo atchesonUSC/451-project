@@ -41,9 +41,11 @@ public:
     void addNode(RRTNode new_node);
     RRTNode get_node(int idx);
     int get_size();
+    void print_tree(void);
 
     std::vector<RRTNode> nodes;
     pthread_mutex_t tree_lock;
+    int goal_node_idx;
 };
 
 
@@ -52,5 +54,5 @@ struct args_info {
     int chunk_sz;
     std::pair<int, int> q_rand;
     std::pair<int, double>* results;
-    std::vector<RRTNode> tree_nodes;
+    int tid;
 };

@@ -79,9 +79,12 @@ void RRTNode::setIdx(int idx) {
 // ========== RRTTree ========== //
 
 RRTTree::RRTTree() {
-	// initialize the mutex
+        // initialize the goal node index
+        int goal_node_idx = -1;
+
+        // initialize the mutex
 	if (pthread_mutex_init(&tree_lock, NULL) != 0) {
-		//return 1;
+		printf("Error while initializing mutex");
 	}
 }
 
@@ -115,6 +118,16 @@ RRTNode RRTTree::get_node(int idx) {
 
 int RRTTree::get_size() {
 	return nodes.size();
+}
+
+void RRTTree::print_tree() {
+    for (int i = 0; i < this->get_size(); ++i) {
+        std::pair<int, int> pos = nodes[i].getPosition();
+        int x = pos.first;
+        int y = pos.second;
+    
+        printf("(%d, %d)\n", x, y);
+    }
 }
 
 /*

@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
     string config_filename;
     config_filename = string(argv[1]);
     config = parse_config_file(config_filename);
-   
+
     // setup arguments
     string bmp_filename;
     int stop_thresh, x_root, y_root, t, samples, m, delta, x_end, y_end, nns_t;
@@ -211,22 +211,34 @@ create new node in direction of sampled node at a distance of delta away from th
 RRTNode create_node(int q_near_idx, pair<int, int> q_rand, int delta) {
     int q_rand_x = q_rand.first;
     int q_rand_y = q_rand.second;
-    
+   
+    printf("q_rand_x = %d\nq_rand_y = %d\n", q_rand.first, q_rand.second);
+ 
     RRTNode rrt_node = tree.get_node(q_near_idx);
     pair<int, int> rrt_node_pos = rrt_node.getPosition();
     int rrt_node_x = rrt_node_pos.first;
     int rrt_node_y = rrt_node_pos.second;
 
+    printf("rrt_node_x = %d\nrrt_node_y = %d\n", rrt_node_x, rrt_node_y);
+
     int dx = q_rand_x - rrt_node_x;
     int dy = q_rand_y - rrt_node_y;
 
+    //printf("dx = %d\ndy = %d\n", dx, dy);
+
     double angle = atan2(dy, dx);
+
+    //printf("angle = %f\n", angle);
 
     int dx_new = (int) (cos(angle) * delta);
     int dy_new = (int) (sin(angle) * delta);
 
+    //printf("dx_new = %d\ndy_new = %d\n", dx_new, dy_new);
+
     int x_new = rrt_node_x + dx_new;
     int y_new = rrt_node_y + dy_new;
+
+    printf("x_new = %d\ny_new = %d\n", x_new, y_new);
 
     // create new node
     pair<int, int> pos_new (x_new, y_new);
@@ -265,8 +277,11 @@ void* thread_sample(void* args_struct) {
     pair<int, int> end_pos (x_end, y_end);
 
     // begin sampling
-    int i = 0;
-    while (i < samples / t){
+    int l = 0;
+    while (l < samples / t){
+        // print out the tree
+        tree.print_tree();
+
  	// check the end_flag
  	int end_flag_raised = 0;
  	pthread_mutex_lock(&end_flag_lock);
@@ -284,32 +299,45 @@ void* thread_sample(void* args_struct) {
         vector<RRTNode> local_bin;
 
         // sync threads
+        //cerr << "before barrier" << endl;
         barrier.wait();
+        //cerr << "after barrier" << endl;
 
         for (int j = 0; j < m; ++j) {
             // sample random location on map
             pair<int, int> q_rand;
             q_rand = sample_bmp_map(dim_x, dim_y);
 
+            int x = q_rand.first;
+            int y = q_rand.second;
+
             // find nearest neighbor to q_rand
             int neighbor_idx = nearest_neighbor_search(q_rand, nns_t);
 
+            //cerr << "after first nns" << endl;
+
             // create new node for tree
             RRTNode new_node = create_node(neighbor_idx, q_rand, delta);
+
+            //cerr << "after create node" << endl;
 
             // similarity check: find nearest neighbor to q_new, if the same nearest neighbor it is not too similar
             pair<int, int> q_new (new_node.getPosition());
             int neighbor_idx2 = nearest_neighbor_search(q_new, nns_t);
             
+            //cerr << "after second nns" << endl;
+            //cerr << "checkfree = " << local_map.checkFree(q_new) << endl;
             // if valid and not too similar pushback
-            if (local_map.checkFree(q_new) && neighbor_idx == neighbor_idx2) {
+            if (local_map.checkFree(q_new) && (neighbor_idx == neighbor_idx2)) {
 		// check that node is within bounds of map
 		pair<int, int> pos (new_node.getPosition());
 		int x = pos.first;
 		int y = pos.second;
 
+                cerr << q_new.first << " " << q_new.second << endl;
 		if ((dim_x > x && x >= 0) && (dim_y > y && y >= 0)) {
-                	local_bin.push_back(new_node);
+                    cerr << "adding batch size m = " << batch_m << endl;	
+                    local_bin.push_back(new_node);
 		} else {
 			batch_m--;
 		}
@@ -319,21 +347,29 @@ void* thread_sample(void* args_struct) {
         }
 
         // sync threads
+        //cerr << "before barrier 2" << endl;
         barrier.wait();
+        //cerr << "after barrier 2" << endl;
 
         // Add valid nodes to global bin
         for (int i = 0; i < batch_m; ++i) {
-            tree.addNode(local_bin[i]);
-	    
 	    // check if we're close enough to the goal
 	    pair<int, int> node_pos = local_bin[i].getPosition();
 	    int d = distance(node_pos, end_pos);
 	    if (d < stop_thresh) {
 		pthread_mutex_lock(&end_flag_lock);
 		end_flag = 1;
+                int idx = tree.get_size();
+                tree.addNode(local_bin[i]);
+                tree.set_goal_idx(idx);
 		pthread_mutex_unlock(&end_flag_lock);
 	    }
+            else {
+                tree.addNode(local_bin[i]);
+            }
         }
+        // update the while loop count
+        l++;
     }
 
     cout << "end of thread sampling..." << endl;
@@ -362,24 +398,26 @@ void* search_partition(void* args) {
 	int chunk_sz = data->chunk_sz;
 	std::pair<int, int> q_rand = data->q_rand;
 	std::pair<int, double>* results = data->results;
-	std::vector<RRTNode> tree_nodes (data->tree_nodes);
+	std::vector<RRTNode> tree_nodes = tree.nodes;
 
 	// get the thread's ID
-	unsigned long int tid = (unsigned long int) pthread_self();
+	int tid = data->tid;
 
 	// find the starting index
 	int start = tid * chunk_sz;
-
 	// iterate over the chunk
 	for (int i = start; i < start+chunk_sz; ++i) {
-		// calculate distance between q_rand and node in partition
+            if(tree_nodes.size() > i) {
+                //cerr << "i = " << i << endl;
+                // calculate distance between q_rand and node in partition
 		double d = distance(q_rand, tree_nodes[i].getPosition());
-
+                //std::cerr << "node " << i << " is x:" << tree_nodes[i].getPosition().first << " y:" << tree_nodes[i].getPosition().second << std::endl;
 		// compare to current value in results
 		if (results[tid].second > d) {
 			std::pair<int, double> new_nearest (i, d);
 			results[tid] = new_nearest;
 		}
+            }
 	}
 	pthread_exit(NULL);
 }
@@ -389,7 +427,8 @@ void* search_partition(void* args) {
 perform the nearest neighbor search
 */
 int nearest_neighbor_search(std::pair<int, int> q_rand, int t) {
-	// number of nodes in tree
+    if (t < tree.get_size()) {	
+        // number of nodes in tree
 	int chunk_sz = tree.get_size() / t;
 
 	// setup array for searching threads
@@ -405,8 +444,8 @@ int nearest_neighbor_search(std::pair<int, int> q_rand, int t) {
 	}
 
 	// have each thread search its partition
-	struct args_info search_partition_args = {chunk_sz, q_rand, results, tree.nodes};
 	for (int i = 0; i < t; ++i) {
+                struct args_info search_partition_args = {chunk_sz, q_rand, results, i};
 		int status = pthread_create(&threads[i], NULL, search_partition, (void*) &search_partition_args);
 		if (status != 0) {
 			std::cerr << "did not create properly" << std::endl;
@@ -427,10 +466,58 @@ int nearest_neighbor_search(std::pair<int, int> q_rand, int t) {
 	double smallest_d = results[0].second;
 	
 	for (int i = 0; i < t; ++i) {
+        	if (results[i].second < smallest_d) {
+			smallest_idx = results[i].first;
+			smallest_d = results[i].second;
+		}
+	}
+	return smallest_idx;
+    } else {
+        int tree_sz = tree.get_size();
+
+        // number of nodes in tree
+	int chunk_sz = 1;
+
+	// setup array for searching threads
+	pthread_t threads[tree_sz];
+
+	// setup array for storing nearest neighbor from each thread's partition
+	std::pair<int, double> results[tree_sz];
+
+	// initiliaze results array
+	for (int i = 0; i < tree_sz; ++i) {
+		std::pair<int, double> default_nearest (-1, FLT_MAX);
+		results[i] = default_nearest;
+	}
+
+	// have each thread search its partition
+	for (int i = 0; i < tree_sz; ++i) {
+                struct args_info search_partition_args = {chunk_sz, q_rand, results, i};
+		int status = pthread_create(&threads[i], NULL, search_partition, (void*) &search_partition_args);
+		if (status != 0) {
+			std::cerr << "did not create properly" << std::endl;
+		}
+	}
+
+	// wait for all threads to finish
+	for (int i = 0; i < tree_sz; ++i) {
+		int status = pthread_join(threads[i], NULL);
+		if (status != 0) {
+			printf("[ERROR] Issue with thread join in nearest neighbor...");
+			return 1;
+		}
+	}
+
+	// after all threads finish, scan over the results and find smallest distance, return the index
+	int smallest_idx = results[0].first;
+	double smallest_d = results[0].second;
+	
+	for (int i = 0; i < tree_sz; ++i) {
 		if (results[i].second < smallest_d) {
 			smallest_idx = results[i].first;
 			smallest_d = results[i].second;
 		}
 	}
 	return smallest_idx;
+    }
 }
