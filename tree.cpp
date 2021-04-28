@@ -116,14 +116,25 @@ void RRTTree::print_tree() {
 }
 
 void RRTTree::serializeTree(std::ostream &o){
-	//write tree to file, note that start pos can be found using the root node, and end pos can be found using the goal node
-	o << goal_node_idx << "\n";
 	o << nodes.size() << "\n";
 	for(int i = 0; i < nodes.size(); i++){
-		o << nodes[i].idx << " " << nodes[i].parent << " " << nodes[i].position.first << " " << nodes[i].position.second;
+		o << nodes[i].position.first << " " << nodes[i].position.second << " ";
 		for(int j = 0; j < nodes[i].children.size(); j++){
-			o << nodes[i].children[j] << " ";
+			o << nodes[i].children[j].position.first << " " << nodes[i].children[j].position.second;
 		}
 		o << "\n";
 	}
+	int curr = goal_node_idx;
+	std::vector<int> path;
+
+	do{
+		path.push_back(curr);
+		curr = nodes[curr].parent;
+	} while(curr != 0);
+
+	o << path.size() << "\n";
+	for(int i = 0; i < path.size(); i++){
+		o << nodes[i].position.first << " " << nodes[i].position.second << "\n";
+	}
+
 }
