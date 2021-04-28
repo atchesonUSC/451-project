@@ -119,9 +119,7 @@ void RRTTree::serializeTree(std::ostream &o){
 	o << nodes.size() << "\n";
 	for(int i = 0; i < nodes.size(); i++){
 		o << nodes[i].position.first << " " << nodes[i].position.second << " ";
-		for(int j = 0; j < nodes[i].children.size(); j++){
-			o << nodes[nodes[i].children[j]].position.first << " " << nodes[nodes[i].children[j]].position.second;
-		}
+		o << nodes[nodes[i].parent].position.first << " " << nodes[nodes[i].parent].position.second;
 		o << "\n";
 	}
 	int curr = goal_node_idx;
