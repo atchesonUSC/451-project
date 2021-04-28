@@ -124,5 +124,6 @@ void RRTTree::serializeTree(std::ostream &o){
 		for(int j = 0; j < nodes[i].children.size(); j++){
 			o << nodes[i].children[j] << " ";
 		}
+		o << "\n";
 	}
 }
