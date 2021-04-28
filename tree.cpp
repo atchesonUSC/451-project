@@ -114,3 +114,15 @@ void RRTTree::print_tree() {
         printf("(%d, %d)\n", x, y);
     }
 }
+
+void RRTTree::serializeTree(std::ostream &o){
+	//write tree to file, note that start pos can be found using the root node, and end pos can be found using the goal node
+	o << goal_node_idx << "\n";
+	o << nodes.size() << "\n";
+	for(int i = 0; i < nodes.size(); i++){
+		o << nodes[i].idx << " " << nodes[i].parent << " " << nodes[i].position.first << " " << nodes[i].position.second;
+		for(int j = 0; j < nodes[i].children.size(); j++){
+			o << nodes[i].children[j] << " ";
+		}
+	}
+}

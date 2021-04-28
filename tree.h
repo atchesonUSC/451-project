@@ -4,6 +4,7 @@
 #include <cmath>
 #include <limits.h>
 #include <algorithm>
+#include <fstream>
 
 
 // ========== RRTNode class ========== //
@@ -43,4 +44,5 @@ public:
 
     std::vector<RRTNode> nodes;
     int goal_node_idx;
+    void serializeTree(std::ostream &o);
 };
