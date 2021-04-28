@@ -2,7 +2,7 @@
 # Variables to control Makefile operation
  
 CC = g++
-CFLAGS = -O3 -lpthread
+CFLAGS = -g -O3 -lpthread
  
 # ****************************************************
 # Targets needed to bring the executable up to date

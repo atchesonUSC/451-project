@@ -67,9 +67,7 @@ bool bmpMap::checkFree(std::pair<int, int> q) {
 
     x = q.first;
     y = q.second;
- 
-    //printf("bitmap[%d][%d]", y, x);
-
+    
     return bitmap[y][x] == '0';
 }
 

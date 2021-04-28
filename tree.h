@@ -3,7 +3,6 @@
 #include <utility>
 #include <cmath>
 #include <limits.h>
-#include <pthread.h>
 #include <algorithm>
 
 
@@ -37,22 +36,11 @@ public:
     RRTTree();
     ~RRTTree();
     void createRoot(std::pair<int, int> start_pos);
-    // int nearest_neighbor_search_new(std::pair<int, int> q_rand, int t);
-    void addNode(RRTNode new_node);
+    void addNode(RRTNode new_node, int end_flag);
     RRTNode get_node(int idx);
     int get_size();
     void print_tree(void);
 
     std::vector<RRTNode> nodes;
-    pthread_mutex_t tree_lock;
     int goal_node_idx;
-};
-
-
-// useful for the reduction phase
-struct args_info {
-    int chunk_sz;
-    std::pair<int, int> q_rand;
-    std::pair<int, double>* results;
-    int tid;
 };
