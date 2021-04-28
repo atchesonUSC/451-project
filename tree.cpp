@@ -120,7 +120,7 @@ void RRTTree::serializeTree(std::ostream &o){
 	for(int i = 0; i < nodes.size(); i++){
 		o << nodes[i].position.first << " " << nodes[i].position.second << " ";
 		for(int j = 0; j < nodes[i].children.size(); j++){
-			o << nodes[i].children[j].position.first << " " << nodes[i].children[j].position.second;
+			o << nodes[nodes[i].children[j]].position.first << " " << nodes[nodes[i].children[j]].position.second;
 		}
 		o << "\n";
 	}
@@ -134,7 +134,7 @@ void RRTTree::serializeTree(std::ostream &o){
 
 	o << path.size() << "\n";
 	for(int i = 0; i < path.size(); i++){
-		o << nodes[i].position.first << " " << nodes[i].position.second << "\n";
+		o << nodes[path[i]].position.first << " " << nodes[path[i]].position.second << "\n";
 	}
 
 }
