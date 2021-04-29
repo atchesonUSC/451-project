@@ -375,6 +375,7 @@ void* thread_sample(void* args_struct) {
 
         // check the end_flag
         int end_flag_raised = 0;
+	barrier.wait();
         pthread_mutex_lock(&end_flag_lock);
         if (end_flag) {
             end_flag_raised = 1;
@@ -435,13 +436,14 @@ void* thread_sample(void* args_struct) {
             
             pthread_mutex_lock(&tree_lock);
             if (d < stop_thresh) {
+		cerr << "distance: " << d << "\n";
                 end_flag = 1;
             }
             tree.addNode(local_bin[i], end_flag);
             pthread_mutex_unlock(&tree_lock);
         }
         // update outer sampling loop count
-        sampler_count++;
+        sampler_count += batch_m;
     }
     pthread_exit(NULL);
 }
