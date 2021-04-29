@@ -120,6 +120,16 @@ int main(int argc, char* argv[]) {
     nns_t = stoi(config[9]);
     stop_thresh = stoi(config[10]);
     bias = stoi(config[11]);
+    
+    //optional config parameters for writing tree to file
+    bool serializeOutput = false;
+    if(config.size() >= 13){
+        serializeOutput = (bool)stoi(config[12]);
+    }
+    string outputFilename = "out.txt";
+    if(config.size() >= 14){
+        outputFilename = config[13];
+    }
 
     // setup barrier
     barrier.set_nthreads(t);
@@ -221,6 +231,12 @@ int main(int argc, char* argv[]) {
     }
     printf("• Execution Time: %f sec\n", time);
     printf("=======================================================\n\n");
+
+    if(serializeOutput){
+        ofstream o;
+        o.open(outputFilename);
+        tree.serializeTree(o);
+    }
 
     return 0;
 }

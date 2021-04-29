@@ -114,3 +114,27 @@ void RRTTree::print_tree() {
         printf("(%d, %d)\n", x, y);
     }
 }
+
+void RRTTree::serializeTree(std::ostream &o){
+	o << nodes.size() << "\n";
+	for(int i = 0; i < nodes.size(); i++){
+		o << nodes[i].position.first << " " << nodes[i].position.second << " ";
+		if(nodes[i].parent >= 0){
+			o << nodes[nodes[i].parent].position.first << " " << nodes[nodes[i].parent].position.second;
+		}
+		o << "\n";
+	}
+	int curr = goal_node_idx;
+	std::vector<int> path;
+
+	do{
+		path.push_back(curr);
+		curr = nodes[curr].parent;
+	} while(curr != 0);
+
+	o << path.size() << "\n";
+	for(int i = 0; i < path.size(); i++){
+		o << nodes[path[i]].position.first << " " << nodes[path[i]].position.second << "\n";
+	}
+
+}
