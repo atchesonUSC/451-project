@@ -89,7 +89,7 @@ void RRTTree::addNode(RRTNode new_node, int end_flag){
 	new_node.setIdx(new_node_idx);
 
 	// check if this is the terminating node
-	if (end_flag) {
+	if (end_flag && goal_node_idx == -1) {
 		goal_node_idx = new_node_idx;
 	}
 
